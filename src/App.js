@@ -8,6 +8,7 @@ function App() {
   return (
     <Router>
       <Routes>
+          <Route path="/payment" element={<PaymentPage />} />
         <Route path="/" element={<KobsendDashboard />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment" element={<PaymentPage />} />
