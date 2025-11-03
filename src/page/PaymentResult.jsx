@@ -153,16 +153,14 @@ export default function PaymentResult() {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
+                const orderId = searchParams.get("orderId")
                 if (orderId) {
                     // Nếu có orderId -> call API
-                    const response = await axios.get(`${API_BASE_URL}/status/${orderId}`);
+                    const response = await axios.get(`${API_BASE_URL}/payment/${orderId}`);
                     console.log("API Response:", response.data);
                     setStatus(response.data.status);
                 } else {
-                    // Nếu không có orderId -> mock theo query param ?status=...
-                    const mockStatus = searchParams.get("status") || "PENDING";
-                    console.log("Mock status:", mockStatus);
-                    setStatus(mockStatus);
+                    setStatus(STATUS.PENDING);
                 }
             } catch (error) {
                 console.error("Error fetching status:", error);

@@ -14,7 +14,7 @@ export default function PaymentPage() {
 
     const [searchParams] = useSearchParams();
     const [orderId, setOrderId] = useState(null);
-    const [accountId, setAccountId] = useState(null);
+    const [paymentId, setPaymentId] = useState(null);
     const [dataQRCode, setDataQRCode] = useState({
         type: null,
         code: null,
@@ -28,15 +28,19 @@ export default function PaymentPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const account = searchParams.get('account-id');
-        console.log('account', account)
-        setAccountId(account);
+        const paymentId = searchParams.get('paymentId');
+        setPaymentId(paymentId);
         const fetchStatus = async () => {
             try {
                 // Nếu có orderId -> call API
-                const res = await axios.get(`${API_BASE_URL}/${API_PAYMENT_DETAIL(accountId)}`);
+                const res = await axios.get(`${API_BASE_URL}/${API_PAYMENT_DETAIL(paymentId)}`);
                 console.log("API Response:", res);
                 if (res?.data) {
+                    if (res.data.status === 'EXPIRED') {
+                        navigate(`/payment-result?orderId=${res?.data?.paymentId}`);
+                        return;
+                    }
+
                     setOrderId(res?.data?.orderId);
                     setStatus(STATUS.INIT);
                     setAmount(res?.data?.amount);
@@ -52,7 +56,7 @@ export default function PaymentPage() {
 
         fetchStatus().then(r => {
         });
-    }, [accountId, searchParams]);
+    }, [paymentId, searchParams]);
 
 
     const connectWebSocket = (orderId) => {
@@ -61,6 +65,7 @@ export default function PaymentPage() {
             webSocketFactory: () => socket,
             onConnect: () => {
                 client.subscribe(`/topic/payment-status-${orderId}`, (message) => {
+                    console.log(message)
                     if (message.body === "SUCCESS") {
                         setStatus("SUCCESS");
                     } else {
@@ -104,19 +109,19 @@ export default function PaymentPage() {
     }, [orderId]);
 
     useEffect(() => {
-        // if (status === STATUS.SUCCESS) {
-        //     setShowSuccess(true);
-        //     setTimeout(() => {
-        //         navigate(`/payment-result?orderId=${orderId}`);
-        //     }, 2000);
-        // }
+        if (status === STATUS.SUCCESS) {
+            setTimeout(() => {
+                navigate(`/payment-result?orderId=${orderId}`);
+            }, 2000);
+        }
 
         if (status === STATUS.EXPIRED) {
             callApiUpdateExpired().then(() => setStatus(STATUS.FAILED));
+            setTimeout(() => {
+                navigate(`/payment-result?orderId=${orderId}`);
+            }, 2000);
         }
-        // setTimeout(() => {
-        //     navigate(`/payment-result?orderId=${orderId}`);
-        // }, 2000);
+
     }, [status, callApiUpdateExpired, orderId, navigate]);
 
     // 🧭 Khi nhận status mới từ PaymentStatus (ví dụ: hết thời gian)
