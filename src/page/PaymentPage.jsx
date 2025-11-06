@@ -13,8 +13,8 @@ import {useNavigate, useSearchParams} from "react-router-dom";
 export default function PaymentPage() {
 
     const [searchParams] = useSearchParams();
-    const [orderId, setOrderId] = useState(null);
     const [paymentId, setPaymentId] = useState(null);
+    const [transCode, setTransCode] = useState(null);
     const [dataQRCode, setDataQRCode] = useState({
         type: null,
         code: null,
@@ -27,25 +27,46 @@ export default function PaymentPage() {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const connectWebSocket = (paymentId) => {
+        console.log(paymentId);
+        const socket = new SockJS("http://localhost:8282/ws");
+        const client = new Client({
+            webSocketFactory: () => socket,
+            onConnect: () => {
+                client.subscribe(`/topic/payment-status-${paymentId}`, (message) => {
+                    console.log("message: ", message);
+                    setStatus(message.body);
+                });
+            },
+            onStompError: (frame) => {
+                console.error("Broker reported error:", frame.headers["message"]);
+                console.error("Additional details:", frame.body);
+            },
+        });
+        client.activate();
+    };
+
     useEffect(() => {
         const paymentId = searchParams.get('paymentId');
         setPaymentId(paymentId);
         const fetchStatus = async () => {
             try {
-                // Nếu có orderId -> call API
+                // Nếu có paymentId -> call API
                 const res = await axios.get(`${API_BASE_URL}/${API_PAYMENT_DETAIL(paymentId)}`);
                 console.log("API Response:", res);
                 if (res?.data) {
                     if (res.data.status === 'EXPIRED') {
-                        navigate(`/payment-result?orderId=${res?.data?.paymentId}`);
+                        navigate(`/payment-result?paymentId=${res?.data?.paymentId}`);
                         return;
                     }
 
-                    setOrderId(res?.data?.orderId);
+                    setPaymentId(res?.data?.paymentId)
+                    setTransCode(res?.data?.transCode)
                     setStatus(STATUS.INIT);
                     setAmount(res?.data?.amount);
                     setExpiredTime(res?.data?.expiredTime);
                     setDataQRCode(JSON.parse(res?.data?.qrCode));
+                    connectWebSocket(res.data.paymentId);
                 }
             } catch (error) {
                 console.error("Error fetching status:", error);
@@ -59,36 +80,15 @@ export default function PaymentPage() {
     }, [paymentId, searchParams]);
 
 
-    const connectWebSocket = (orderId) => {
-        const socket = new SockJS("http://localhost:8282/ws");
-        const client = new Client({
-            webSocketFactory: () => socket,
-            onConnect: () => {
-                client.subscribe(`/topic/payment-status-${orderId}`, (message) => {
-                    console.log(message)
-                    if (message.body === "SUCCESS") {
-                        setStatus("SUCCESS");
-                    } else {
-                        setStatus(message.body);
-                    }
-                });
-            },
-            onStompError: (frame) => {
-                console.error("Broker reported error:", frame.headers["message"]);
-                console.error("Additional details:", frame.body);
-            },
-        });
-        client.activate();
-    };
-
     const initPayment = async () => {
         setLoading(true);
         try {
             const res = await axios.post(`${API_BASE_URL}/${API_PAYMENT_INIT}`, {
                 amount: amount,
             });
-            setOrderId(res.data.orderId);
-            connectWebSocket(res.data.orderId);
+            console.log("payment: ", paymentId)
+            setPaymentId(res.data.paymentId);
+            connectWebSocket(res.data.paymentId);
         } catch (error) {
             console.error("Init payment failed", error);
         } finally {
@@ -99,30 +99,30 @@ export default function PaymentPage() {
     const callApiUpdateExpired = useCallback(async () => {
         try {
             // setLoading(true);
-            const resEXPIRED = await axios.patch(`${API_BASE_URL}/${API_PARTNERS_EXPIRED(orderId)}`);
+            const resEXPIRED = await axios.patch(`${API_BASE_URL}/${API_PARTNERS_EXPIRED(paymentId)}`);
             console.log('resEXPIRED', resEXPIRED);
         } catch (error) {
             console.error("Init payment failed", error);
         } finally {
             setLoading(false);
         }
-    }, [orderId]);
+    }, [paymentId]);
 
     useEffect(() => {
         if (status === STATUS.SUCCESS) {
             setTimeout(() => {
-                navigate(`/payment-result?orderId=${orderId}`);
+                navigate(`/payment-result?paymentId=${paymentId}`);
             }, 2000);
         }
 
         if (status === STATUS.EXPIRED) {
             callApiUpdateExpired().then(() => setStatus(STATUS.FAILED));
             setTimeout(() => {
-                navigate(`/payment-result?orderId=${orderId}`);
+                navigate(`/payment-result?paymentId=${paymentId}`);
             }, 2000);
         }
 
-    }, [status, callApiUpdateExpired, orderId, navigate]);
+    }, [status, callApiUpdateExpired, paymentId, navigate]);
 
     // 🧭 Khi nhận status mới từ PaymentStatus (ví dụ: hết thời gian)
     const handleStatusChange = (newStatus) => {
@@ -165,7 +165,7 @@ export default function PaymentPage() {
                         </div>
                     )}
 
-                    {!loading && !orderId && (
+                    {!loading && !paymentId && (
                         <>
                             <div className="mb-6">
                                 <label className="block text-lg font-medium text-gray-700 mb-2">
@@ -190,7 +190,7 @@ export default function PaymentPage() {
                         </>
                     )}
 
-                    {orderId && !loading && (
+                    {paymentId && !loading && (
                         <>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
@@ -216,7 +216,7 @@ export default function PaymentPage() {
                                         </div>
                                         <div>
                                             <b>Nội dung chuyển khoản:</b>{" "}
-                                            <span className="text-red-600 font-bold">{orderId}</span>
+                                            <span className="text-red-600 font-bold">{transCode}</span>
                                         </div>
                                     </div>
                                     <div className="text-sm text-gray-600">

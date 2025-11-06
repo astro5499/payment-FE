@@ -8,7 +8,7 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get("orderId");
+  const paymentId = searchParams.get("paymentId");
   const token = searchParams.get("token");
 
   const [status, setStatus] = useState("INIT");
@@ -16,12 +16,19 @@ export default function Payment() {
   const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const connectWebSocket = (orderId) => {
+  useEffect(() => {
+    console.log("PaymentId từ URL:", paymentId);
+    console.log("Token từ URL:", token);
+    if (paymentId) connectWebSocket(paymentId);
+  }, [paymentId]);
+
+  const connectWebSocket = (paymentId) => {
+    console.log(paymentId);
     const socket = new SockJS("http://localhost:8282/ws");
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
-        client.subscribe(`/topic/payment-status-${orderId}`, (message) => {
+        client.subscribe(`/topic/payment-status-${paymentId}`, (message) => {
           setStatus(message.body);
         });
       },

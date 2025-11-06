@@ -5,7 +5,7 @@ import {API_BASE_URL, STATUS} from "../constant/Constant";
 import '../resouces/PaymentStatusPage.css';
 
 export default function PaymentResult() {
-    const {orderId} = useParams();
+    const {paymentId} = useParams();
     const [searchParams] = useSearchParams(); // lấy query param nếu có ?status=SUCCESS
     const [status, setStatus] = useState(null);
     const navigate = useNavigate();
@@ -153,10 +153,10 @@ export default function PaymentResult() {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const orderId = searchParams.get("orderId")
-                if (orderId) {
-                    // Nếu có orderId -> call API
-                    const response = await axios.get(`${API_BASE_URL}/payment/${orderId}`);
+                const paymentId = searchParams.get("paymentId")
+                if (paymentId) {
+                    // Nếu có paymentId -> call API
+                    const response = await axios.get(`${API_BASE_URL}/payment/${paymentId}`);
                     console.log("API Response:", response.data);
                     setStatus(response.data.status);
                 } else {
@@ -169,14 +169,14 @@ export default function PaymentResult() {
         };
 
         fetchStatus().then(r => {});
-    }, [orderId, searchParams]);
+    }, [paymentId, searchParams]);
 
 
     function onContinue() {
         navigate('/orders', {
             state: {
                 message: 'Thanh toán thành công',
-                orderId: orderId
+                paymentId: paymentId
             }
         });
     }
@@ -184,7 +184,7 @@ export default function PaymentResult() {
     function onRetry() {
         navigate('/payment', {
             state: {
-                orderId: orderId,
+                paymentId: paymentId,
                 retry: true
             }
         });
