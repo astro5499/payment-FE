@@ -5,7 +5,7 @@ import {Client} from "@stomp/stompjs";
 import {QRCodeSVG} from "qrcode.react";
 import {motion} from "framer-motion";
 import {API_BASE_URL, STATUS} from "../constant/Constant";
-import {API_PARTNERS_EXPIRED, API_PAYMENT_DETAIL, API_PAYMENT_INIT} from "../constant/Api";
+import {API_PARTNERS_EXPIRED, API_PAYMENT_DETAIL} from "../constant/Api";
 import PaymentStatus from "./component/PaymentStatus";
 import {useNavigate, useSearchParams} from "react-router-dom";
 
@@ -59,12 +59,20 @@ export default function PaymentPage() {
                         navigate(`/payment-result?paymentId=${res?.data?.paymentId}`);
                         return;
                     }
+                    const remainingTime = getRemainingSeconds(res?.data?.createdAt, res?.data?.expiredTime);
+                    if (remainingTime === 0){
+                        callApiUpdateExpired().then(() => setStatus(STATUS.EXPIRED));
+                        setTimeout(() => {
+                            navigate(`/payment-result?paymentId=${paymentId}`);
+                        }, 2000);
+                        return
+                    }
 
                     setPaymentId(res?.data?.paymentId)
                     setTransCode(res?.data?.transCode)
                     setStatus(STATUS.INIT);
                     setAmount(res?.data?.amount);
-                    setExpiredTime(res?.data?.expiredTime);
+                    setExpiredTime(remainingTime);
                     setDataQRCode(JSON.parse(res?.data?.qrCode));
                     connectWebSocket(res.data.paymentId);
                 }
@@ -80,21 +88,16 @@ export default function PaymentPage() {
     }, [paymentId, searchParams]);
 
 
-    const initPayment = async () => {
-        setLoading(true);
-        try {
-            const res = await axios.post(`${API_BASE_URL}/${API_PAYMENT_INIT}`, {
-                amount: amount,
-            });
-            console.log("payment: ", paymentId)
-            setPaymentId(res.data.paymentId);
-            connectWebSocket(res.data.paymentId);
-        } catch (error) {
-            console.error("Init payment failed", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    function getRemainingSeconds(dateCreate, expireSeconds) {
+        const createdTime = new Date(dateCreate);
+        const expireTime = new Date(createdTime.getTime() + expireSeconds * 1000);
+        const now = new Date();
+
+        const diffMs = expireTime - now;
+        const diffSec = Math.floor(diffMs / 1000);
+
+        return diffSec > 0 ? diffSec : 0;
+    }
 
     const callApiUpdateExpired = useCallback(async () => {
         try {
@@ -160,34 +163,9 @@ export default function PaymentPage() {
                                 className="w-16 h-16 border-4 border-orange-400 border-t-transparent rounded-full"
                             ></motion.div>
                             <p className="mt-4 text-orange-600 font-medium">
-                                Đang tạo đơn, vui lòng chờ...
+                                Đang lấy thông tin thanh toán, vui lòng chờ...
                             </p>
                         </div>
-                    )}
-
-                    {!loading && !paymentId && (
-                        <>
-                            <div className="mb-6">
-                                <label className="block text-lg font-medium text-gray-700 mb-2">
-                                    Nhập số tiền muốn nạp
-                                </label>
-                                <input
-                                    type="number"
-                                    min={1000}
-                                    step={1000}
-                                    value={amount}
-                                    onChange={(e) => setAmount(Number(e.target.value))}
-                                    className="w-full border border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-                                />
-                            </div>
-
-                            <button
-                                onClick={initPayment}
-                                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg shadow-md transition"
-                            >
-                                Tạo đơn nạp tiền
-                            </button>
-                        </>
                     )}
 
                     {paymentId && !loading && (
