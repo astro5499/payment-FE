@@ -153,77 +153,22 @@ export default function KobsendDashboard() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Kobsend API Demo</h1>
-      <button
-        className="mb-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-        onClick={initTransactions}
-      >
-       Pending transaction
-      </button>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 to-orange-100">
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-2 border-b">User</th>
-              <th className="px-4 py-2 border-b">Tx ID</th>
-              <th className="px-4 py-2 border-b">Date</th>
-              <th className="px-4 py-2 border-b">From</th>
-              <th className="px-4 py-2 border-b">To</th>
-              <th className="px-4 py-2 border-b">Amount</th>
-              <th className="px-4 py-2 border-b">Status</th>
-              <th className="px-4 py-2 border-b">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((txn) => (
-              <tr key={txn.id} className="text-center">
-                <td className="px-4 py-2 border-b">{txn.requestUser}</td>
-                <td className="px-4 py-2 border-b">{txn.txId}</td>
-                <td className="px-4 py-2 border-b">{txn.date}</td>
-                <td className="px-4 py-2 border-b">{txn.fromAccountNumber}</td>
-                <td className="px-4 py-2 border-b">{txn.toAccountNumber}</td>
-                <td className="px-4 py-2 border-b">{txn.amount} HTG</td>
-                <td className="px-4 py-2 border-b">{statusBadge(txn.status)}</td>
-                <td className="px-4 py-2 border-b">
-                  {txn.status === "pending" && (
-                    <button
-                      className="px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
-                      onClick={() => handlePayment(txn)}
-                    >
-                      Payment
-                    </button>
-                  )}
-                  {txn.status === "success" && <span className="text-gray-500">TransactionID: {txn.transactionId}</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Popup Confirm */}
-      {showPopup && selectedTxn && apiResult && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-96 p-6 relative">
-            <h2 className="text-xl font-bold mb-4">Confirm Transaction</h2>
-            <div className="mb-4 space-y-1 text-gray-700">
-              <p><strong>Sender:</strong> {selectedTxn.fromAccountNumber}</p>
-              <p><strong>Receiver:</strong> {apiResult.receiver.accountNumber}</p>
-              <p><strong>Amount:</strong> {apiResult.amount} HTG</p>
-              <p><strong>Fee:</strong> {apiResult.fee}</p>
-              <p><strong>Discount:</strong> {apiResult.discount}</p>
-              <p><strong>Commission:</strong> {apiResult.commission}</p>
-              <p><strong>Total:</strong> {apiResult.totalAmount} HTG</p>
-            </div>
-            <div className="flex justify-end gap-3">
-              <button className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400" onClick={handleReject}>Reject</button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700" onClick={handleConfirm}>Confirm</button>
-            </div>
+        {/* HEADER */}
+        <header className="bg-orange-500 text-white p-4 shadow-md">
+          <div className="max-w-5xl mx-auto flex justify-between items-center">
+            <div className="text-2xl font-bold">P2P Haiti Solution</div>
+            <div className="text-sm opacity-90">Cổng Thanh Toán An Toàn</div>
           </div>
-        </div>
-      )}
-    </div>
+        </header>
+        <main className="flex-1 flex items-center justify-center p-4 min-h-screen">
+        </main>
+
+        {/* FOOTER */}
+        <footer className="bg-orange-500 text-white p-4 text-center text-sm">
+          © {new Date().getFullYear()} P2P Haiti Solution — Cổng thanh toán an toàn
+        </footer>
+      </div>
   );
 }
