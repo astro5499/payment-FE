@@ -4,15 +4,16 @@ import KobsendDashboard from "./page/KobsendDashboard";
 import PaymentSuccess from "./page/KobsendDashboard";
 import PaymentResult from "./page/PaymentResult";
 import PageNotFound from "./page/PageNotFound";
+import Payment from "./page/PaymentMomo";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<KobsendDashboard />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/payment-result" element={<PaymentResult />} />
+        {/*<Route path="/payment-success" element={<PaymentSuccess />} />*/}
+        <Route path="/payment" element={<Payment />} />
+        {/*<Route path="/payment-result" element={<PaymentResult />} />*/}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
