@@ -8,6 +8,8 @@ import {motion} from "framer-motion";
 import {useSearchParams} from "react-router-dom";
 import {API_PARTNERS_EXPIRED} from "../constant/Api";
 import {API_BASE_URL} from "../constant/Constant";
+import { useTranslation } from "react-i18next";
+import { loadLanguage } from "../i18n/loadLanguage";
 
 /**
  * Payment page
@@ -26,6 +28,8 @@ const API_BASE = "http://localhost:8282"; // đổi theo backend của bạn
 const WS_URL = `${API_BASE}/ws`; // đổi nếu cần wss://...
 
 export default function Payment() {
+    const { t } = useTranslation();
+
     const [searchParams] = useSearchParams();
     const paymentId = searchParams.get("paymentId");
 
@@ -108,6 +112,7 @@ export default function Payment() {
                 if (!res) {
                     return;
                 } else {
+                    await loadLanguage(res.data.language);
                     setLoading(false);
                 }
 
@@ -134,6 +139,7 @@ export default function Payment() {
                 // if BE returns a returnUrl, store it in ref for redirect
                 clientReturnUrl.current = res.data.returnUrl ?? null;
 
+                console.log('get payment id');
                 // connect WS subscription
                 connectWebSocket(paymentId);
             } catch (err) {
@@ -199,6 +205,7 @@ export default function Payment() {
             if (remainingTime <= 0) {
                 // expired
                 setStatus("EXPIRED");
+                setShowSuccess(false);
                 setTransSuccess(true);
                 // optionally disconnect ws
                 if (clientRef.current) {
@@ -252,7 +259,7 @@ export default function Payment() {
                         {/* Natcash logo placeholder - replace src with your logo */}
                         <div className="text-lg font-semibold text-pink-600">Natcash</div>
                     </div>
-                    <div className="text-sm text-gray-600">Cổng Thanh Toán An Toàn</div>
+                    <div className="text-sm text-gray-600">Secure Payment Gateway</div>
                 </div>
             </header>
 
@@ -265,7 +272,7 @@ export default function Payment() {
                             transition={{repeat: Infinity, duration: 1}}
                             className="w-16 h-16 border-4 border-pink-300 border-t-transparent rounded-full"
                         />
-                        <p className="mt-4 text-pink-600 font-medium">Đang tải thông tin giao dịch...</p>
+                        <p className="mt-4 text-pink-600 font-medium">Loading transaction information...</p>
                     </div>
                 ) : showSuccess ? (
                     // Success screen
@@ -288,12 +295,10 @@ export default function Payment() {
                                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <div className="text-3xl font-bold text-green-600 mb-2">Thanh toán thành công!</div>
-                        <div className="text-center text-gray-700 mb-4">Cảm ơn bạn đã sử dụng Natcash. Hệ thống sẽ
-                            chuyển hướng sau ít giây.
-                        </div>
-                        <div className="text-xs text-gray-400">Nếu không chuyển hướng, <a
-                            href={clientReturnUrl.current ?? "/"} className="text-pink-600 underline">click vào đây</a>.
+                        <div className="text-3xl font-bold text-green-600 mb-2">{t("success.title")}</div>
+                        <div className="text-center text-gray-700 mb-4">{t("success.message")}</div>
+                        <div className="text-xs text-gray-400">{t("success.redirect")} <a
+                            href={clientReturnUrl.current ?? "/"} className="text-pink-600 underline">{t("success.clickHere")}</a>.
                         </div>
                     </motion.div>
                 ) : status === "INVALID_REQUEST" || status === "NOT_FOUND" ? (
@@ -318,7 +323,7 @@ export default function Payment() {
                             </svg>
                         </div>
                         <div className="text-3xl font-bold text-center text-red-600 mb-2">
-                            Giao dịch không hợp lệ hoặc không tồn tại
+                            {t("error.invalid")}
                             {errorMsg && <div className="mt-2 text-sm text-gray-600">{errorMsg}</div>}
                         </div>
                     </motion.div>
@@ -332,53 +337,52 @@ export default function Payment() {
                     >
                         {/* Left: order info */}
                         <div className="p-8 bg-white">
-                            <div className="text-pink-600 font-semibold text-lg mb-4">Cổng thanh toán</div>
+                            <div className="text-pink-600 font-semibold text-lg mb-4">{t("payment.title")}</div>
 
                             <div className="space-y-4 text-gray-700">
                                 <div>
-                                    <div className="text-sm font-medium mb-1">Nhà cung cấp</div>
+                                    <div className="text-sm font-medium mb-1">{t("payment.provider")}</div>
                                     <div className="flex items-center gap-3">
                                         <div className="font-medium">Natcash</div>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <div className="text-sm font-medium mb-1">Mã đơn hàng</div>
+                                    <div className="text-sm font-medium mb-1">{t("payment.orderId")}</div>
                                     <div className="font-mono text-gray-800">{orderId}</div>
                                 </div>
 
                                 <div>
-                                    <div className="text-sm font-medium mb-1">Mô tả</div>
+                                    <div className="text-sm font-medium mb-1">{t("payment.description")}</div>
                                     <div className="text-gray-800">{transContent ?? paymentId}</div>
                                 </div>
 
                                 <div>
-                                    <div className="text-sm font-medium mb-1">Số tiền</div>
+                                    <div className="text-sm font-medium mb-1">{t("payment.amount")}</div>
                                     <div className="text-2xl font-bold text-gray-900">{fmtAmount(amount)} VND</div>
                                 </div>
 
                                 <div className="mt-6">
-                                    <div className="text-sm text-gray-600 mb-2">Đơn hàng sẽ hết hạn sau:</div>
+                                    <div className="text-sm text-gray-600 mb-2">{t("payment.expire.in")}</div>
                                     <div className="flex items-center gap-3">
                                         <div
                                             className="bg-pink-50 border border-pink-100 text-pink-600 font-semibold rounded-md px-3 py-2 text-center">
                                             <div className="text-lg">{String(timeLeft.min).padStart(2, "0")}</div>
-                                            <div className="text-xs font-normal text-gray-500">Phút</div>
+                                            <div className="text-xs font-normal text-gray-500">{t("payment.minute")}</div>
                                         </div>
                                         <div
                                             className="bg-pink-50 border border-pink-100 text-pink-600 font-semibold rounded-md px-3 py-2 text-center">
                                             <div className="text-lg">{String(timeLeft.sec).padStart(2, "0")}</div>
-                                            <div className="text-xs font-normal text-gray-500">Giây</div>
+                                            <div className="text-xs font-normal text-gray-500">{t("payment.second")}</div>
                                         </div>
                                     </div>
                                     {status === "EXPIRED" && (
-                                        <div className="mt-3 text-sm text-red-600 font-medium">Đơn hàng đã hết hạn</div>
+                                        <div className="mt-3 text-sm text-red-600 font-medium">{t("payment.expired")}</div>
                                     )}
                                 </div>
 
                                 <div className="mt-6 text-sm text-gray-600">
-                                    Vui lòng mở ứng dụng ngân hàng/Momo để quét mã QR và thực hiện thanh toán. Hệ thống
-                                    sẽ tự động cập nhật trạng thái.
+                                    {t("payment.scan.instruction")}
                                 </div>
                             </div>
                         </div>
@@ -386,7 +390,7 @@ export default function Payment() {
                         {/* Right: QR + scan effect */}
                         <div
                             className="relative p-8 bg-gradient-to-b from-pink-600 to-pink-500 text-white flex flex-col items-center justify-center">
-                            <h3 className="text-white text-xl font-semibold mb-4">Quét mã QR để thanh toán</h3>
+                            <h3 className="text-white text-xl font-semibold mb-4">{t("qr.title")}</h3>
 
                             {/* QR box */}
                             <div
@@ -396,7 +400,7 @@ export default function Payment() {
                                     <QRCodeSVG value={qrCode} size={220} bgColor="#fff" fgColor="#d82b8d" level="H"/>
                                 ) : (
                                     <div className="w-48 h-48 flex items-center justify-center text-sm text-gray-400">
-                                        QR không có sẵn
+                                        {t("qr.notAvailable")}
                                     </div>
                                 )}
 
@@ -439,18 +443,18 @@ export default function Payment() {
                             </div>
 
                             <div className="mt-4 text-center text-white/90">
-                                <div className="text-sm">Mở App MoMo hoặc ứng dụng hỗ trợ QR để quét</div>
-                                <div className="text-xs mt-1">Gặp lỗi?
+                                <div className="text-sm">{t("qr.openApp")}</div>
+                                <div className="text-xs mt-1">{t("qr.help")}
                                     <button onClick={() => alert("Hiển thị hướng dẫn ở đây")}
                                             className="underline text-pink-600 bg-transparent p-0 m-0 border-0 cursor-pointer"
-                                    > Xem hướng dẫn</button>
+                                    > {t("qr.guide")}</button>
                                 </div>
                             </div>
 
                             {/* small status */}
                             <div className="mt-6 text-white/90">
                                 <div className="text-sm font-medium">
-                                    {status === "PENDING" && "Đang chờ thanh toán..."}
+                                    {status === "PENDING" && t("status.waiting")}
                                     {status !== "PENDING" && status !== "EXPIRED" && status !== "SUCCESS" && status}
                                 </div>
                             </div>
@@ -461,7 +465,7 @@ export default function Payment() {
 
             {/* FOOTER */}
             <footer className="bg-white/80 p-4 text-center text-sm">
-                © {new Date().getFullYear()} Natcash — Cổng thanh toán an toàn
+                © {new Date().getFullYear()} Natcash — Secure Payment Gateway
             </footer>
 
             {/* Inline styles for better beam blur if Tailwind absent */}
