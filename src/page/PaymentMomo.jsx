@@ -47,6 +47,8 @@ export default function Payment() {
     const [errorMsg, setErrorMsg] = useState(null);
     const clientRef = useRef(null);
     const redirectTimeoutRef = useRef(null);
+    const hasCalledApi = useRef(false);
+
 
     // countdown derived from expiredTime
     const [timeLeft, setTimeLeft] = useState({min: 0, sec: 0});
@@ -105,6 +107,9 @@ export default function Payment() {
                 setStatus("INVALID_REQUEST");
                 return;
             }
+            console.log("hasCalledApi", hasCalledApi.current)
+            if (hasCalledApi.current) return;
+            hasCalledApi.current = true;
             try {
                 setLoading(true);
                 const res = await axios.get(`${API_BASE}/payment/${paymentId}`);
