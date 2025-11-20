@@ -1,0 +1,33 @@
+{
+  "header.gateway": "Secure Payment Gateway",
+
+  "loading.message": "Loading transaction information...",
+
+  "success.title": "Payment Successful!",
+  "success.message": "Thank you for using Natcash. The system will redirect shortly.",
+  "success.redirect": "If not redirected, ",
+  "success.clickHere": "click here",
+
+  "error.invalid": "Invalid or non-existent transaction",
+
+  "payment.title": "Payment Gateway",
+  "payment.provider": "Provider",
+  "payment.orderId": "Order ID",
+  "payment.description": "Description",
+  "payment.amount": "Amount",
+  "payment.expire.in": "Order will expire in:",
+  "payment.minute": "Minute",
+  "payment.second": "Second",
+  "payment.expired": "Order has expired",
+  "payment.scan.instruction": "Please open your banking app/MoMo to scan the QR code and complete the payment. The system will update automatically.",
+
+  "qr.title": "Scan QR Code to Pay",
+  "qr.notAvailable": "QR not available",
+  "qr.openApp": "Open MoMo or any QR-enabled app to scan",
+  "qr.help": "Having issues? ",
+  "qr.guide": "View instructions",
+
+  "status.waiting": "Waiting for payment...",
+
+  "footer": "Secure payment gateway"
+}

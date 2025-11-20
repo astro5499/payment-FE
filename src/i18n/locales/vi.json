@@ -1,0 +1,33 @@
+{
+  "header.gateway": "Cổng Thanh Toán An Toàn",
+
+  "loading.message": "Đang tải thông tin giao dịch...",
+
+  "success.title": "Thanh toán thành công!",
+  "success.message": "Cảm ơn bạn đã sử dụng Natcash. Hệ thống sẽ chuyển hướng sau ít giây.",
+  "success.redirect": "Nếu không chuyển hướng, ",
+  "success.clickHere": "click vào đây",
+
+  "error.invalid": "Giao dịch không hợp lệ hoặc không tồn tại",
+
+  "payment.title": "Cổng thanh toán",
+  "payment.provider": "Nhà cung cấp",
+  "payment.orderId": "Mã đơn hàng",
+  "payment.description": "Mô tả",
+  "payment.amount": "Số tiền",
+  "payment.expire.in": "Đơn hàng sẽ hết hạn sau:",
+  "payment.minute": "Phút",
+  "payment.second": "Giây",
+  "payment.expired": "Đơn hàng đã hết hạn",
+  "payment.scan.instruction": "Vui lòng mở ứng dụng ngân hàng/Momo để quét mã QR và thực hiện thanh toán. Hệ thống sẽ tự động cập nhật trạng thái.",
+
+  "qr.title": "Quét mã QR để thanh toán",
+  "qr.notAvailable": "QR không có sẵn",
+  "qr.openApp": "Mở App MoMo hoặc ứng dụng hỗ trợ QR để quét",
+  "qr.help": "Gặp lỗi? ",
+  "qr.guide": "Xem hướng dẫn",
+
+  "status.waiting": "Đang chờ thanh toán...",
+
+  "footer": "Cổng thanh toán an toàn"
+}
