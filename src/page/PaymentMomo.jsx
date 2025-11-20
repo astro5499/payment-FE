@@ -162,7 +162,7 @@ export default function Payment() {
     useEffect(() => {
         if (status === "SUCCESS") {
             setShowSuccess(true);
-            if (!transSuccess) {
+            if (!transSuccess && clientReturnUrl.current) {
                 redirectTimeoutRef.current = setTimeout(() => {
                     window.location.href = clientReturnUrl.current ?? "/";
                 }, 2000);
@@ -293,9 +293,6 @@ export default function Payment() {
                         </div>
                         <div className="text-3xl font-bold text-green-600 mb-2">{t("success.title")}</div>
                         <div className="text-center text-gray-700 mb-4">{t("success.message")}</div>
-                        <div className="text-xs text-gray-400">{t("success.redirect")} <a
-                            href={clientReturnUrl.current ?? "/"} className="text-pink-600 underline">{t("success.clickHere")}</a>.
-                        </div>
                     </motion.div>
                 ) : status === "INVALID_REQUEST" || status === "NOT_FOUND" ? (
 
@@ -344,7 +341,7 @@ export default function Payment() {
                             </svg>
                         </div>
                         <div className="text-3xl font-bold text-center text-gray-500 mb-2">
-                            {t("error.expired")}
+                            {t("payment.expired")}
                             {errorMsg && <div className="mt-2 text-sm text-gray-600">{errorMsg}</div>}
                         </div>
                     </motion.div>

@@ -4,7 +4,7 @@
   "loading.message": "Loading transaction information...",
 
   "success.title": "Payment Successful!",
-  "success.message": "Thank you for using Natcash. The system will redirect shortly.",
+  "success.message": "Thank you for using Natcash.",
   "success.redirect": "If not redirected, ",
   "success.clickHere": "click here",
 
