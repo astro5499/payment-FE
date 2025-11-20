@@ -20,7 +20,7 @@ export async function loadLanguage(lang) {
         );
 
         // change language
-        i18n.changeLanguage(lang);
+        await i18n.changeLanguage(lang);
     } catch (error) {
         const translations = await import(`./locales/en.json`);
 
@@ -34,6 +34,6 @@ export async function loadLanguage(lang) {
         );
 
         // change language
-        i18n.changeLanguage(lang);
+        await i18n.changeLanguage(lang);
     }
 }

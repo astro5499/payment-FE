@@ -62,25 +62,21 @@ export default function Payment() {
                 webSocketFactory: () => socket,
                 reconnectDelay: 5000,
                 onConnect: () => {
-                    console.log("onConnect")
                     // subscribe to the topic for order
                     client.subscribe(`/topic/payment-status-${paymentId}`, (message) => {
-                        console.log('message', message);
                         const data = JSON.parse(message.body);
                         if (!data) {
                             setStatus("INVALID_REQUEST");
                         } else {
                             const statusMessage = data.status;
                             setStatus(statusMessage);
-                            console.log("Received WS message:", statusMessage);
                             if (statusMessage === "SUCCESS") {
-                                console.log('data', data)
                                 setShowSuccess(true);
                                 setTransSuccess(true);
                                 // optional: redirect after 2s
                                 redirectTimeoutRef.current = setTimeout(() => {
-                                    window.open(data.callbackUrl ?? "/", "_blank");
-                                }, 2000);
+                                    window.location.href = data.callbackUrl;
+                                }, 3000);
                             }
                         }
 
@@ -107,13 +103,11 @@ export default function Payment() {
                 setStatus("INVALID_REQUEST");
                 return;
             }
-            console.log("hasCalledApi", hasCalledApi.current)
             if (hasCalledApi.current) return;
             hasCalledApi.current = true;
             try {
                 setLoading(true);
                 const res = await axios.get(`${API_BASE}/payment/${paymentId}`);
-                console.log("API Response:", res.data);
                 if (!res) {
                     return;
                 } else {
@@ -138,13 +132,11 @@ export default function Payment() {
                         setExpiredTime(t);
                         setDateCreated(res.data.createdAt ?? null)
                     }
-                    console.log("t", t)
                 }
 
                 // if BE returns a returnUrl, store it in ref for redirect
                 clientReturnUrl.current = res.data.returnUrl ?? null;
 
-                console.log('get payment id');
                 // connect WS subscription
                 connectWebSocket(paymentId);
             } catch (err) {
@@ -179,7 +171,6 @@ export default function Payment() {
         if (status === "EXPIRED") {
             if (transSuccess) {
                 const res = axios.patch(`${API_BASE_URL}/${API_PARTNERS_EXPIRED(paymentId)}`);
-                console.log('res',res)
             }
         }
     }, [status]);
@@ -329,6 +320,31 @@ export default function Payment() {
                         </div>
                         <div className="text-3xl font-bold text-center text-red-600 mb-2">
                             {t("error.invalid")}
+                            {errorMsg && <div className="mt-2 text-sm text-gray-600">{errorMsg}</div>}
+                        </div>
+                    </motion.div>
+                ) : status === "EXPIRED" ? (
+                    <motion.div
+                        initial={{scale: 0.8, opacity: 0}}
+                        animate={{scale: 1, opacity: 1}}
+                        transition={{duration: 0.4}}
+                        className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md flex flex-col items-center"
+                    >
+                        <div className="animate-fadeIn">
+                            <svg
+                                className="mx-auto h-16 w-16 text-gray-500 animate-pulse"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div className="text-3xl font-bold text-center text-gray-500 mb-2">
+                            {t("error.expired")}
                             {errorMsg && <div className="mt-2 text-sm text-gray-600">{errorMsg}</div>}
                         </div>
                     </motion.div>
