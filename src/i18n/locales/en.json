@@ -12,18 +12,19 @@
 
   "payment.title": "Payment Gateway",
   "payment.provider": "Provider",
-  "payment.orderId": "Order ID",
+  "payment.orderId": "Please enter the transfer details below",
   "payment.description": "Description",
+  "payment.accountId": "Wallet account number",
   "payment.amount": "Amount",
   "payment.expire.in": "Order will expire in:",
   "payment.minute": "Minute",
   "payment.second": "Second",
   "payment.expired": "Order has expired",
-  "payment.scan.instruction": "Please open your banking app/MoMo to scan the QR code and complete the payment. The system will update automatically.",
+  "payment.scan.instruction": "Please open your wallet app/Natcash to scan the QR code or USSD then complete the payment. The system will update automatically.",
 
   "qr.title": "Scan QR Code to Pay",
   "qr.notAvailable": "QR not available",
-  "qr.openApp": "Open MoMo or any QR-enabled app to scan",
+  "qr.openApp": "Open Natcash to scan",
   "qr.help": "Having issues? ",
   "qr.guide": "View instructions",
 
