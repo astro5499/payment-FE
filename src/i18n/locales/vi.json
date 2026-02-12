@@ -14,6 +14,7 @@
   "payment.provider": "Nhà cung cấp",
   "payment.orderId": "Mã đơn hàng",
   "payment.description": "Mô tả",
+  "payment.accountId": "Số tài khoản ví",
   "payment.amount": "Số tiền",
   "payment.expire.in": "Đơn hàng sẽ hết hạn sau:",
   "payment.minute": "Phút",

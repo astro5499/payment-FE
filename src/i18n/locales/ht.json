@@ -13,18 +13,19 @@
 
   "payment.title": "Pòtay peman",
   "payment.provider": "Founisè",
-  "payment.orderId": "Nimewo kòmann",
+  "payment.orderId": "Tanpri antre kontni transfè a anba a",
   "payment.description": "Deskripsyon",
+  "payment.accountId": "Nimewo kont bous",
   "payment.amount": "Kantite lajan",
   "payment.expire.in": "Kòmann nan pral ekspire apre:",
   "payment.minute": "Minit",
   "payment.second": "Segonn",
   "payment.expired": "Kòmann nan ekspire",
-  "payment.scan.instruction": "Tanpri ouvri aplikasyon bank ou/MoMo pou eskane kòd QR la epi peye. Sistèm nan ap mete ajou otomatikman.",
+  "payment.scan.instruction": "Tanpri louvri aplikasyon bous ou/Natcash pou eskane kòd QR la epi fini peman an. Sistèm nan ap mete ajou otomatikman.",
 
   "qr.title": "Eskane kòd QR pou peye",
   "qr.notAvailable": "QR pa disponib",
-  "qr.openApp": "Ouvri MoMo oswa nenpòt aplikasyon ki sipòte QR pou eskane",
+  "qr.openApp": "Ouvri oswa nenpòt aplikasyon ki sipòte QR pou eskane",
   "qr.help": "Gen pwoblèm? ",
   "qr.guide": "Gade enstriksyon yo",
 

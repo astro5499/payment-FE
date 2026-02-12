@@ -38,6 +38,7 @@ export default function Payment() {
     const [amount, setAmount] = useState(null);
     const [orderId, setOrderId] = useState(null);
     const [transContent, setTransContent] = useState(null);
+    const [accountId, setAccountId] = useState(null);
     const [transSuccess, setTransSuccess] = useState(false);
     const [loading, setLoading] = useState(true);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -121,7 +122,7 @@ export default function Payment() {
                 setStatus(res.data.status != null ? res.data.status : "NOT_FOUND");
                 setTransContent(res.data.paymentId ?? paymentId);
                 setQrCode(res.data.qrCode ?? null);
-
+                setAccountId(res.data.accountId ?? null);
                 // handle expiration timestamp (server should provide absolute timestamp in ms or ISO)
                 if (res.data.expiredTime) {
                     // support ISO or numeric ms
@@ -367,20 +368,18 @@ export default function Payment() {
                                         <div className="font-medium">Natcash</div>
                                     </div>
                                 </div>
-
                                 <div>
-                                    <div className="text-sm font-medium mb-1">{t("payment.orderId")}</div>
+                                    <div className="text-sm font-medium mb-1">{t("payment.accountId")}</div>
+                                    <div className="text-gray-800">{accountId}</div>
+                                </div>
+                                <div>
+                                    <div className="text-sm font-medium mb-1">{t("payment.orderId")}:</div>
                                     <div className="font-mono text-gray-800">{orderId}</div>
                                 </div>
 
                                 <div>
-                                    <div className="text-sm font-medium mb-1">{t("payment.description")}</div>
-                                    <div className="text-gray-800">{transContent ?? paymentId}</div>
-                                </div>
-
-                                <div>
                                     <div className="text-sm font-medium mb-1">{t("payment.amount")}</div>
-                                    <div className="text-2xl font-bold text-gray-900">{fmtAmount(amount)} VND</div>
+                                    <div className="text-2xl font-bold text-gray-900">{fmtAmount(amount)} HTG</div>
                                 </div>
 
                                 <div className="mt-6">
@@ -463,14 +462,14 @@ export default function Payment() {
                                 </motion.div>
                             </div>
 
-                            <div className="mt-4 text-center text-white/90">
+                            {/* <div className="mt-4 text-center text-white/90">
                                 <div className="text-sm">{t("qr.openApp")}</div>
                                 <div className="text-xs mt-1">{t("qr.help")}
                                     <button onClick={() => alert("Hiển thị hướng dẫn ở đây")}
                                             className="underline text-pink-600 bg-transparent p-0 m-0 border-0 cursor-pointer"
                                     > {t("qr.guide")}</button>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* small status */}
                             <div className="mt-6 text-white/90">
